@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampGDKGamemodes", "SampGDKGamemodes\SampGDKGamemodes.vcxproj", "{A078BD31-32A1-44DE-9404-731CF0587FC4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A078BD31-32A1-44DE-9404-731CF0587FC4}.Debug|x64.ActiveCfg = Debug|x64
+		{A078BD31-32A1-44DE-9404-731CF0587FC4}.Debug|x64.Build.0 = Debug|x64
+		{A078BD31-32A1-44DE-9404-731CF0587FC4}.Debug|x86.ActiveCfg = Debug|Win32
+		{A078BD31-32A1-44DE-9404-731CF0587FC4}.Debug|x86.Build.0 = Debug|Win32
+		{A078BD31-32A1-44DE-9404-731CF0587FC4}.Release|x64.ActiveCfg = Release|x64
+		{A078BD31-32A1-44DE-9404-731CF0587FC4}.Release|x64.Build.0 = Release|x64
+		{A078BD31-32A1-44DE-9404-731CF0587FC4}.Release|x86.ActiveCfg = Release|Win32
+		{A078BD31-32A1-44DE-9404-731CF0587FC4}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9730003C-5842-46F7-93C6-FB0C4975DB7A}
+	EndGlobalSection
+EndGlobal
