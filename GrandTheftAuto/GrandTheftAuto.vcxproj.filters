@@ -15,8 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\EntryPoint\EntryPoint.cpp">
+    <ClCompile Include="src\GrandTheftAuto.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="def\GrandTheftAuto.def">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

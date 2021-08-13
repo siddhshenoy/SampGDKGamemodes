@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{a078bd31-32a1-44de-9404-731cf0587fc4}</ProjectGuid>
-    <RootNamespace>SampGDKGamemodes</RootNamespace>
+    <ProjectGuid>{5a4105a5-9e30-4c70-aeef-11ca67263f55}</ProjectGuid>
+    <RootNamespace>SampGDK</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -88,9 +88,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;SAMPGDK_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)SampGDK\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -103,9 +102,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;SAMPGDK_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)SampGDK\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,12 +141,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\EntryPoint\EntryPoint.cpp" />
+    <ClCompile Include="src\amxplugin.cpp" />
+    <ClCompile Include="src\sampgdk.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SampGDK\SampGDK.vcxproj">
-      <Project>{5a4105a5-9e30-4c70-aeef-11ca67263f55}</Project>
-    </ProjectReference>
+    <ClInclude Include="src\amx\amx.h" />
+    <ClInclude Include="src\amx\getch.h" />
+    <ClInclude Include="src\amx\sclinux.h" />
+    <ClInclude Include="src\plugin.h" />
+    <ClInclude Include="src\plugincommon.h" />
+    <ClInclude Include="src\sampgdk.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
