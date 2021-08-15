@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -21,19 +21,19 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b36ab924-e4fb-4dbd-8ec7-61e04e448092}</ProjectGuid>
-    <RootNamespace>GrandTheftAuto</RootNamespace>
+    <ProjectGuid>{c62a804a-7a83-4e05-a4d5-920f5e375ab2}</ProjectGuid>
+    <RootNamespace>SampAPI</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -72,11 +72,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\Binaries\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Binaries\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Binaries\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Binaries\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -88,23 +88,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;SAMPGDK_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)SampGDK\src;$(SolutionDir)SampAPI\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SampGDK.lib;SampGDKGamemodes.lib;SampAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Configuration)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>$(ProjectDir)def\$(ProjectName).def</ModuleDefinitionFile>
     </Link>
-    <PostBuildEvent>
-      <Command>move "$(SolutionDir)Binaries\$(Configuration)\$(ProjectName).dll" "D:\_sampserver\plugins\"</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>Command to move the generated dll to plugins folder in SAMP Server</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -112,7 +103,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;SAMPGDK_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)SampGDK\src;$(SolutionDir)SampAPI\src;</AdditionalIncludeDirectories>
     </ClCompile>
@@ -121,16 +112,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SampGDK.lib;SampGDKGamemodes.lib;SampAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Configuration)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>$(ProjectDir)def\$(ProjectName).def</ModuleDefinitionFile>
     </Link>
-    <PostBuildEvent>
-      <Command>move "$(SolutionDir)Binaries\$(Configuration)\$(ProjectName).dll" "D:\_sampserver\plugins\"</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>Command to move the generated dll to plugins folder in SAMP Server</Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -161,17 +143,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\GamemodeLoader.cpp" />
-    <ClCompile Include="src\GrandTheftAuto.cpp" />
+    <ClInclude Include="src\Api\CAPIManager.h" />
+    <ClInclude Include="src\Api\IGamemode.h" />
+    <ClInclude Include="src\Api\INormalGamemode.h" />
+    <ClInclude Include="src\Api\INormalGamemodeApi.h" />
+    <ClInclude Include="src\Base\CPool.h" />
+    <ClInclude Include="src\Base\CBaseEntity.h" />
+    <ClInclude Include="src\Base\CPlayer.h" />
+    <ClInclude Include="src\Functions\Functions.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="def\GrandTheftAuto.def" />
-    <None Include="src\GrandTheftAuto.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SampGDKGamemodes\SampGDKGamemodes.vcxproj">
-      <Project>{a078bd31-32a1-44de-9404-731cf0587fc4}</Project>
-    </ProjectReference>
+    <ClCompile Include="src\Api\CAPIManager.cpp" />
+    <ClCompile Include="src\Base\CPool.cpp" />
+    <ClCompile Include="src\Base\CBaseEntity.cpp" />
+    <ClCompile Include="src\Base\CPlayer.cpp" />
+    <ClCompile Include="src\Functions\Functions.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

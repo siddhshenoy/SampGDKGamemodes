@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -90,7 +90,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)SampGDK\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SampGDK\src;$(SolutionDir)SampAPI\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -105,7 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)SampGDK\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)SampGDK\src;$(SolutionDir)SampAPI\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,8 +144,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\EntryPoint\EntryPoint.cpp" />
+    <ClCompile Include="src\EntryPoint\Plugin.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SampAPI\SampAPI.vcxproj">
+      <Project>{c62a804a-7a83-4e05-a4d5-920f5e375ab2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\SampGDK\SampGDK.vcxproj">
       <Project>{5a4105a5-9e30-4c70-aeef-11ca67263f55}</Project>
     </ProjectReference>

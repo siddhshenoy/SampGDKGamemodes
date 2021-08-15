@@ -1,98 +1,70 @@
-#include <stdio.h>
-#include <string.h>
+#pragma once
+#include "GrandTheftAuto.h"
+
+#include <iostream>
+#include <string>
 
 #include <sampgdk.h>
+#include <Functions/Functions.h>
 
-
-void SAMPGDK_CALL PrintTickCountTimer(int timerid, void* params)
+namespace GrandTheftAuto
 {
-    sampgdk::logprintf("Tick count: %d", GetTickCount());
-}
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit()
-{
-    SetGameModeText("Hello, World!");
-    AddPlayerClass(0, 1958.3783f, 1343.1572f, 15.3746f, 269.1425f,
-        0, 0, 0, 0, 0, 0);
-    SetTimer(1000, true, PrintTickCountTimer, 0);
-    return true;
-}
-
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
-{
-    SendClientMessage(playerid, 0xFFFFFFFF, "Welcome to the HelloWorld server!");
-    return true;
-}
-
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid)
-{
-    SetPlayerPos(playerid, 1958.3783f, 1343.1572f, 15.3746f);
-    SetPlayerCameraPos(playerid, 1958.3783f, 1343.1572f, 15.3746f);
-    SetPlayerCameraLookAt(playerid, 1958.3783f, 1343.1572f, 15.3746f, CAMERA_CUT);
-    return true;
-}
-
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char* cmdtext)
-{
-    if (strcmp(cmdtext, "/hello") == 0) {
-        char name[MAX_PLAYER_NAME];
-        GetPlayerName(playerid, name, sizeof(name));
-        char message[MAX_CLIENT_MESSAGE];
-        sprintf(message, "Hello, %s!", name);
-        SendClientMessage(playerid, 0x00FF00FF, message);
+    bool OnGameModeInit()
+    {
+        sampgdk::logprintf("Loading OnGameModeInit using INormalGamemode");
         return true;
     }
-    return false;
-}
+    bool OnGameModeExit()
+    {
+        sampgdk::logprintf("Loading OnGameModeExit using INormalGamemode");
+        return true;
+    }
+    bool OnPlayerConnect(int playerid)
+    {
+        std::string DisconnectMessage;
+        DisconnectMessage = "[C] Player " + PlayerName(playerid) + " has connected to the server.";
+        SendClientMessageToAll(0x9A9A9AFF, DisconnectMessage.c_str());
+        return true;
+    }
+    bool OnPlayerDisconnect(int playerid, int reason)
+    {
+        //Disconnect message..
+        
 
-PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
-{
-    return sampgdk::Supports() | SUPPORTS_PROCESS_TICK;
-}
+        std::string DisconnectMessage;
+        DisconnectMessage = "[D] Player " + PlayerName(playerid) + " has disconnected from the server (" + GetDisconnectReason(reason) + ").";
+        SendClientMessageToAll(0x9A9A9AFF, DisconnectMessage.c_str());
+        return true;
+    }
 
-PLUGIN_EXPORT bool PLUGIN_CALL Load(void** ppData)
-{
-    return sampgdk::Load(ppData);
-}
+    bool OnPlayerRequestClass(int playerid, int classid)
+    {
+        return true;
+    }
 
-PLUGIN_EXPORT void PLUGIN_CALL Unload()
-{
-    sampgdk::Unload();
-}
-
-PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
-{
-    sampgdk::ProcessTick();
-}
-/*
-EXPORTS
-	Supports
-	Load
-	Unload
-	ProcessTick
-	OnPublicCall
-	OnGameModeInit
-	OnGameModeExit
-	OnPlayerConnect
-	OnPlayerDisconnect
-	OnPlayerSpawn
-	OnPlayerStateChange
-	OnDialogResponse
-	OnPlayerRequestClass
-	OnPlayerCommandText
-	OnPlayerDeath
-	OnVehicleSpawn
-	OnVehicleDeath
-	OnPlayerText
-	OnPlayerEnterVehicle
-	OnPlayerExitVehicle
-	OnPlayerClickPlayer
-	OnPlayerEnterCheckpoint
-	OnPlayerLeaveCheckpoint
-	OnPlayerEnterRaceCheckpoint
-	OnPlayerLeaveRaceCheckpoint
-	OnPlayerRequestSpawn
-	OnPlayerUpdate
-	OnPlayerKeyStateChange
-
-*/
+    bool OnPlayerCommandText(int playerid, const char* cmdtext)
+    {
+        if (strcmp(cmdtext, "/hello") == 0)
+        {
+            char name[MAX_PLAYER_NAME];
+            GetPlayerName(playerid, name, sizeof(name));
+            char message[MAX_CLIENT_MESSAGE];
+            sprintf(message, "Hello, %s!", name);
+            SendClientMessage(playerid, 0x00FF00FF, message);
+            return true;
+        }
+        return false;
+    }
+    bool OnPlayerStateChange(int playerid, int newstate, int oldstate)
+    {
+        return true;
+    }
+    bool OnPlayerSpawn(int playerid)
+    {
+        SetPlayerPos(playerid, -2680.4922f, -2224.0251f, 2.2676f);
+        SetPlayerFacingAngle(playerid, 220.3892f);
+        SendClientMessage(playerid, -1, "You have spawned at the default position.");
+        return true;
+    }
+};

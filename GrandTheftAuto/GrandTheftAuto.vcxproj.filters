@@ -18,10 +18,14 @@
     <ClCompile Include="src\GrandTheftAuto.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GamemodeLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="def\GrandTheftAuto.def">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="src\GrandTheftAuto.h" />
   </ItemGroup>
 </Project>

@@ -4,6 +4,9 @@ EXPORTS
 	Unload
 	ProcessTick
 	OnGameModeInit
+	OnGameModeExit
 	OnPlayerConnect
+	OnPlayerDisconnect
 	OnPlayerRequestClass
 	OnPlayerCommandText
+	OnPlayerSpawn

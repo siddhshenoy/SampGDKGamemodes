@@ -3,64 +3,110 @@
 
 #include <sampgdk.h>
 
-
-void SAMPGDK_CALL PrintTickCountTimer(int timerid, void* params)
-{
-    sampgdk::logprintf("Tick count: %d", GetTickCount());
-}
+#include <Api/CAPIManager.h>
+#include <Base/CPool.h>
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit()
 {
-    SetGameModeText("Hello, World!");
-    AddPlayerClass(0, 1958.3783f, 1343.1572f, 15.3746f, 269.1425f,
-        0, 0, 0, 0, 0, 0);
-    SetTimer(1000, true, PrintTickCountTimer, 0);
+    CAPIManager::Setup();
+    if (CAPIManager::GetGamemodeType() == EApiType::NORMAL_GAMEMODE)
+    {
+        NORMAL_GAMEMODE_CHECK_FUNCTION(CAPIManager::NormalGamemode, OnGameModeInit)
+        {
+            return NORMAL_GAMEMODE_FUNCTION_CALL(CAPIManager::NormalGamemode, OnGameModeInit);
+        }
+    }
+    return true;
+}
+PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeExit()
+{
+    
+    if (CAPIManager::GetGamemodeType() == EApiType::NORMAL_GAMEMODE)
+    {
+        NORMAL_GAMEMODE_CHECK_FUNCTION(CAPIManager::NormalGamemode, OnGameModeExit)
+        {
+            return NORMAL_GAMEMODE_FUNCTION_CALL(CAPIManager::NormalGamemode, OnGameModeExit);
+        }
+    }
+    CAPIManager::Cleanup();
     return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 {
-    SendClientMessage(playerid, 0xFFFFFFFF, "Welcome to the HelloWorld server!");
+    // Add the player to the CPlayer pool
+    CPool::AddPlayerToPool(playerid);
+    
+    // Rest of the code..
+    if (CAPIManager::GetGamemodeType() == EApiType::NORMAL_GAMEMODE)
+    {
+        NORMAL_GAMEMODE_CHECK_FUNCTION(CAPIManager::NormalGamemode, OnPlayerConnect)
+        {
+            return NORMAL_GAMEMODE_FUNCTION_CALL(CAPIManager::NormalGamemode, OnPlayerConnect, playerid);
+        }
+    }
+    return true;
+}
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason)
+{
+    // Remove the player from the CPlayer pool
+    CPool::DeletePlayerFromPool(playerid);
+
+    //Rest of the code..
+    if (CAPIManager::GetGamemodeType() == EApiType::NORMAL_GAMEMODE)
+    {
+        NORMAL_GAMEMODE_CHECK_FUNCTION(CAPIManager::NormalGamemode, OnPlayerDisconnect)
+        {
+            return NORMAL_GAMEMODE_FUNCTION_CALL(CAPIManager::NormalGamemode, OnPlayerDisconnect, playerid, reason);
+        }
+    }
     return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid)
 {
-    SetPlayerPos(playerid, 1958.3783f, 1343.1572f, 15.3746f);
-    SetPlayerCameraPos(playerid, 1958.3783f, 1343.1572f, 15.3746f);
-    SetPlayerCameraLookAt(playerid, 1958.3783f, 1343.1572f, 15.3746f, CAMERA_CUT);
+    if (CAPIManager::GetGamemodeType() == EApiType::NORMAL_GAMEMODE)
+    {
+        NORMAL_GAMEMODE_CHECK_FUNCTION(CAPIManager::NormalGamemode, OnPlayerRequestClass)
+        {
+            return NORMAL_GAMEMODE_FUNCTION_CALL(CAPIManager::NormalGamemode, OnPlayerRequestClass, playerid, classid);
+        }
+    }
     return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char* cmdtext)
 {
-    if (strcmp(cmdtext, "/hello") == 0) {
-        char name[MAX_PLAYER_NAME];
-        GetPlayerName(playerid, name, sizeof(name));
-        char message[MAX_CLIENT_MESSAGE];
-        sprintf(message, "Hello, %s!", name);
-        SendClientMessage(playerid, 0x00FF00FF, message);
-        return true;
+    if (CAPIManager::GetGamemodeType() == EApiType::NORMAL_GAMEMODE)
+    {
+        NORMAL_GAMEMODE_CHECK_FUNCTION(CAPIManager::NormalGamemode, OnPlayerCommandText)
+        {
+            return NORMAL_GAMEMODE_FUNCTION_CALL(CAPIManager::NormalGamemode, OnPlayerCommandText, playerid, cmdtext);
+        }
     }
     return false;
 }
 
-PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid)
 {
-    return sampgdk::Supports() | SUPPORTS_PROCESS_TICK;
+    if (CAPIManager::GetGamemodeType() == EApiType::NORMAL_GAMEMODE)
+    {
+        NORMAL_GAMEMODE_CHECK_FUNCTION(CAPIManager::NormalGamemode, OnPlayerSpawn)
+        {
+            return NORMAL_GAMEMODE_FUNCTION_CALL(CAPIManager::NormalGamemode, OnPlayerSpawn, playerid);
+        }
+    }
+    return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL Load(void** ppData)
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerStateChange(int playerid, int newstate, int oldstate)
 {
-    return sampgdk::Load(ppData);
-}
-
-PLUGIN_EXPORT void PLUGIN_CALL Unload()
-{
-    sampgdk::Unload();
-}
-
-PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
-{
-    sampgdk::ProcessTick();
+    if (CAPIManager::GetGamemodeType() == EApiType::NORMAL_GAMEMODE)
+    {
+        NORMAL_GAMEMODE_CHECK_FUNCTION(CAPIManager::NormalGamemode, OnPlayerStateChange)
+        {
+            return NORMAL_GAMEMODE_FUNCTION_CALL(CAPIManager::NormalGamemode, OnPlayerStateChange, playerid, newstate, oldstate);
+        }
+    }
+    return true;
 }
