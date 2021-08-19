@@ -10,6 +10,7 @@ std::string PlayerName(int playerid)
 	GetPlayerName(playerid, _Name, sizeof(_Name));
 	return _Name;
 }
+
 std::string GetDisconnectReason(int reason)
 {
     std::string result = "";

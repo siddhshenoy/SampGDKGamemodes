@@ -151,6 +151,8 @@
     <ClInclude Include="src\Base\CBaseEntity.h" />
     <ClInclude Include="src\Base\CPlayer.h" />
     <ClInclude Include="src\Functions\Functions.h" />
+    <ClInclude Include="src\Functions\StringFunctions.h" />
+    <ClInclude Include="src\Functions\VectorFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Api\CAPIManager.cpp" />

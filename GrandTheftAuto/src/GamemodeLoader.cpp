@@ -12,6 +12,7 @@ void CAPIManager::Setup()
     NewGamemode->OnPlayerConnect = GrandTheftAuto::OnPlayerConnect;
     NewGamemode->OnPlayerDisconnect = GrandTheftAuto::OnPlayerDisconnect;
     NewGamemode->OnPlayerSpawn = GrandTheftAuto::OnPlayerSpawn;
+    NewGamemode->OnPlayerCommandText = GrandTheftAuto::OnPlayerCommandText;
     CAPIManager::AttachNormalGamemode(NewGamemode);
     //NewGamemode->OnGameModeExit = OnGameModeExit;
 

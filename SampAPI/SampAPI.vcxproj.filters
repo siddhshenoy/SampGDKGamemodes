@@ -39,6 +39,12 @@
     <ClInclude Include="src\Api\IGamemode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Functions\StringFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Functions\VectorFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Base\CPlayer.cpp">

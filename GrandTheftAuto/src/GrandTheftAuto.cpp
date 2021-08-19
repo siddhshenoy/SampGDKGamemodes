@@ -6,6 +6,8 @@
 
 #include <sampgdk.h>
 #include <Functions/Functions.h>
+#include <Functions/StringFunctions.h>
+#include <Functions/VectorFunctions.h>
 
 namespace GrandTheftAuto
 {
@@ -43,16 +45,22 @@ namespace GrandTheftAuto
         return true;
     }
 
-    bool OnPlayerCommandText(int playerid, const char* cmdtext)
+    bool OnPlayerCommandText(int playerid, const std::string& cmdtext)
     {
-        if (strcmp(cmdtext, "/hello") == 0)
+        std::vector<std::string> Splits = Utils::String::Split(cmdtext, ' ');
+        std::vector<std::string> Params = Utils::Vector::CreateVector(Splits, 1, Splits.size());
+        
+        if (Splits.size() > 0)
         {
-            char name[MAX_PLAYER_NAME];
-            GetPlayerName(playerid, name, sizeof(name));
-            char message[MAX_CLIENT_MESSAGE];
-            sprintf(message, "Hello, %s!", name);
-            SendClientMessage(playerid, 0x00FF00FF, message);
-            return true;
+            if (Splits[0] == "/testcommand")
+            {
+                std::vector<std::string> Result;
+                if (Utils::String::sscanf(Params, "ifcs", Result)) return SendClientMessage(playerid, 0xFF0000FF, "Usage: /testcommand <integer> <float> <char> <string>");
+                SendClientMessage(playerid, -1, Result[0].c_str());
+                SendClientMessage(playerid, -1, Result[1].c_str());
+                SendClientMessage(playerid, -1, Result[2].c_str());
+                SendClientMessage(playerid, -1, Result[3].c_str());
+            }
         }
         return false;
     }
