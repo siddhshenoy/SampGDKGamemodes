@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include <Base/CPool.h>
+
 namespace Utils
 {
 	namespace String
@@ -17,7 +19,7 @@ namespace Utils
 		static std::vector<std::string> Split(const char* string, const char delimiter = ' ');
 		static char** Split(const std::string& str, unsigned int& total, const char delimiter = ' ');
 		static char** Split(const char* string, unsigned int& total, const char delimiter = ' ');
-		static bool sscanf(const std::vector<std::string>& splits, const std::string& format, std::vector<std::string>& result);
+		static bool sscanf(const std::vector<std::string>& splits, const std::string& format, std::vector<std::string>& result, bool ReturnBadPlayerID = true);
 		static std::vector<std::string> GroupLikeDatatypes(const std::vector<std::string>& splits);
 		//static std::string strreplace(const std::string& str,const std::string& toreplace,const std::string& replacestr);
 
@@ -130,8 +132,9 @@ namespace Utils
 			return (float)std::atof(str.c_str());
 		}
 
-		bool sscanf(const std::vector<std::string>& splits, const std::string& format, std::vector<std::string>& result)
+		bool sscanf(const std::vector<std::string>& splits, const std::string& format, std::vector<std::string>& result, bool ReturnBadPlayerID)
 		{
+			if (splits.size() < 1 && format.length() > 0) return true;
 			//Format Specifier parsing start...
 			std::vector<SSCANF_PARAMETER> SpecifierList;
 			int ActualTotalParams = 0;
@@ -182,6 +185,7 @@ namespace Utils
 							SpecifierList.push_back(temp);
 							break;
 						}
+						
 					}
 				}
 			}
@@ -202,73 +206,115 @@ namespace Utils
 				SSCANF_PARAMETER Param = *it;
 				switch (Param.specifier)
 				{
-				case 's':
-				{
-					if (Param.length == -1)
+					case 's':
 					{
-						result.push_back(splits[iSplit]);
-						//std::cout << "Parse Complete for " << Param.specifier << std::endl;
-						iSplit++;
-					}
-					else
-					{
-						std::string TempStr = "";
-						while (TempStr.length() <= Param.length && iSplit < splits.size())
+						if (Param.length == -1)
 						{
+							result.push_back(splits[iSplit]);
+							//std::cout << "Parse Complete for " << Param.specifier << std::endl;
+							iSplit++;
+						}
+						else
+						{
+							std::string TempStr = "";
+							while (TempStr.length() <= Param.length && iSplit < splits.size())
+							{
 
-							TempStr += splits[iSplit] + " ";
-							iSplit++;
-							std::cout << " iSplit: " << iSplit << " TempStringLength: " << TempStr.length() << std::endl;
+								TempStr += splits[iSplit] + " ";
+								iSplit++;
+								std::cout << " iSplit: " << iSplit << " TempStringLength: " << TempStr.length() << std::endl;
+							}
+							if (TempStr.length() > Param.length) TempStr = TempStr.substr(0, Param.length);
+							//std::cout << "Parse Complete for " << Param.specifier << "<" << Param.length << ">: " << TempStr << std::endl;
+							result.push_back(TempStr);
 						}
-						if (TempStr.length() > Param.length) TempStr = TempStr.substr(0, Param.length);
-						//std::cout << "Parse Complete for " << Param.specifier << "<" << Param.length << ">: " << TempStr << std::endl;
-						result.push_back(TempStr);
+						break;
 					}
-					break;
-				}
-				case 'c': //Character
-				{
-					if (iSplit < splits.size())
+					case 'c': //Character
 					{
-						if (splits[iSplit].length() == Param.length)
+						if (iSplit < splits.size())
 						{
-							result.push_back(splits[iSplit]);
-							iSplit++;
+							if (splits[iSplit].length() == Param.length)
+							{
+								result.push_back(splits[iSplit]);
+								iSplit++;
+							}
+							else ExitParseFailure = true;
 						}
 						else ExitParseFailure = true;
+						break;
 					}
-					else ExitParseFailure = true;
-					break;
-				}
-				case 'i':
-				case 'd':
-				{
-					if (iSplit < splits.size())
+					case 'i':
+					case 'd':
 					{
-						if (IsInt(splits[iSplit]))
+						if (iSplit < splits.size())
 						{
-							result.push_back(splits[iSplit]);
-							iSplit++;
+							if (IsInt(splits[iSplit]))
+							{
+								result.push_back(splits[iSplit]);
+								iSplit++;
+							}
+							else ExitParseFailure = true;
 						}
 						else ExitParseFailure = true;
+						break;
 					}
-					else ExitParseFailure = true;
-					break;
-				}
-				case 'f':
-				{
-					if (iSplit < splits.size())
+					case 'u':
 					{
-						if (IsFloat(splits[iSplit]))
+						if (iSplit < splits.size())
 						{
-							result.push_back(splits[iSplit]);
-							iSplit++;
+							if (IsInt(splits[iSplit]))
+							{
+								if (CPool::CheckPlayerInPool(std::atoi(splits[iSplit].c_str())))
+								{
+									result.push_back(splits[iSplit]);
+									iSplit++;
+								}
+								else
+								{
+									if (ReturnBadPlayerID)
+									{
+										result.push_back(std::to_string(INVALID_PLAYER_ID));
+										iSplit++;
+									}
+									else ExitParseFailure = true;
+								}
+							}
+							else
+							{
+								int id = CPool::FindPlayerWithSubname(splits[iSplit]);
+								if (id != -1)
+								{
+									result.push_back(std::to_string(id));
+									iSplit++;
+								}
+								else
+								{
+									if (ReturnBadPlayerID)
+									{
+										result.push_back(std::to_string(INVALID_PLAYER_ID));
+										iSplit++;
+									}
+									else ExitParseFailure = true;
+								}
+							}
+						}
+						break;
+					}
+					case 'f':
+					{
+						if (iSplit < splits.size())
+						{
+							if (IsFloat(splits[iSplit]))
+							{
+								result.push_back(splits[iSplit]);
+								iSplit++;
+							}
+							else ExitParseFailure = true;
 						}
 						else ExitParseFailure = true;
+						break;
 					}
-					else ExitParseFailure = true;
-					break;
-				}
 				}
 				if (ExitParseFailure) break;
 			}

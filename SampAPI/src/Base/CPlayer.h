@@ -9,13 +9,15 @@
 
 
 
-class CPlayer : CBaseEntity
+class CPlayer : public CBaseEntity
 {
 private:
+	char m_Name[MAX_PLAYER_NAME];
 	int m_LastOnPlayerRequestClassTime;
 public:
 	CPlayer();
 	CPlayer(int id);
+	std::string GetName();
 	void InstantKick(void (*Function)(CPlayer*) = NULL);
 	void DelayedKick(int delay, void (*Function)(CPlayer*) = NULL);
 	~CPlayer();

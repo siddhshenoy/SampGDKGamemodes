@@ -11,7 +11,6 @@ namespace Utils
 		static std::vector<T> CreateVector(std::vector<T> input, size_t start = 0, size_t end = -1);
 
 		static std::string CreateStringFromVector(std::vector<std::string> input,std::string delimiter, size_t start = 0, size_t end = -1);
-
 		template<class T>
 		std::vector<T> CreateVector(std::vector<T> input, size_t start, size_t end)
 		{

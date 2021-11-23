@@ -105,7 +105,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)SampGDK\src;$(SolutionDir)SampAPI\src;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\Includes;$(SolutionDir)SampGDK\src;$(SolutionDir)SampAPI\src;$(SolutionDir)CCWrapper;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +143,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Base\CNpcConfig.h" />
+    <ClInclude Include="src\JavascriptFunctions\FCNPCJS.h" />
+    <ClInclude Include="src\JavascriptFunctions\SAMPJS.h" />
+    <ClInclude Include="src\Base\CNpc.h" />
+    <ClInclude Include="src\ThirdParty\FCNPC.h" />
+    <ClInclude Include="src\Base\CVehicleSeats.h" />
+    <ClInclude Include="src\Base\CVehicle.h" />
+    <ClInclude Include="src\Maths\CPoint2D.h" />
+    <ClInclude Include="src\Maths\CPoint3D.h" />
+    <ClInclude Include="src\Maths\CVector2f.h" />
+    <ClInclude Include="src\Maths\CVector3f.h" />
     <ClInclude Include="src\Api\CAPIManager.h" />
     <ClInclude Include="src\Api\IGamemode.h" />
     <ClInclude Include="src\Api\INormalGamemode.h" />
@@ -155,6 +166,17 @@
     <ClInclude Include="src\Functions\VectorFunctions.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Base\CNpcConfig.cpp" />
+    <ClCompile Include="src\JavascriptFunctions\FCNPCJS.cpp" />
+    <ClCompile Include="src\JavascriptFunctions\SAMPJS.cpp" />
+    <ClCompile Include="src\Base\CNpc.cpp" />
+    <ClCompile Include="src\ThirdParty\FCNPC.cpp" />
+    <ClCompile Include="src\Base\CVehicleSeats.cpp" />
+    <ClCompile Include="src\Base\CVehicle.cpp" />
+    <ClCompile Include="src\Maths\CPoint2D.cpp" />
+    <ClCompile Include="src\Maths\CPoint3D.cpp" />
+    <ClCompile Include="src\Maths\CVector2f.cpp" />
+    <ClCompile Include="src\Maths\CVector3f.cpp" />
     <ClCompile Include="src\Api\CAPIManager.cpp" />
     <ClCompile Include="src\Base\CPool.cpp" />
     <ClCompile Include="src\Base\CBaseEntity.cpp" />

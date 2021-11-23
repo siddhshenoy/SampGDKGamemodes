@@ -15,6 +15,11 @@ CPlayer::CPlayer(int id) : CBaseEntity(id)
 {
 
 }
+std::string CPlayer::GetName()
+{
+	GetPlayerName(m_ID, m_Name, sizeof(m_Name));
+	return m_Name;
+}
 
 void CPlayer::InstantKick(ExtraKickFunction Function)
 {

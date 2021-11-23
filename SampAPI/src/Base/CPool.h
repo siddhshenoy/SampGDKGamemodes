@@ -39,6 +39,7 @@ public:
 	 * @param id - PlayerID
 	 */
 	static void DeletePlayerFromPool(int id);
+	static int FindPlayerWithSubname(const std::string& str);
 public:
 
 };

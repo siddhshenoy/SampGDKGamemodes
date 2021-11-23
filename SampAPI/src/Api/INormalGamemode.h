@@ -44,5 +44,28 @@ typedef struct INormalGamemode
 	bool (*OnVehicleStreamOut)(int, int) = nullptr;
 	bool (*OnDialogResponse)(int, int, int, int, const std::string&) = nullptr;
 	bool (*OnPlayerClickPlayer)(int, int, int) = nullptr;
+	bool (*FCNPC_OnCreate)(int) = nullptr;
+	bool (*FCNPC_OnDestroy)(int) = nullptr;
+	bool (*FCNPC_OnSpawn)(int) = nullptr;
+	bool (*FCNPC_OnRespawn)(int) = nullptr;
+	bool (*FCNPC_OnDeath)(int, int, int) = nullptr;
+	bool (*FCNPC_OnUpdate)(int) = nullptr;
+	bool (*FCNPC_OnTakeDamage)(int, int, float, int, int) = nullptr;
+	bool (*FCNPC_OnGiveDamage)(int, int, float, int, int) = nullptr;
+	bool (*FCNPC_OnReachDestination)(int) = nullptr;
+	bool (*FCNPC_OnWeaponShot)(int, int, int, int, float, float, float) = nullptr;
+	bool (*FCNPC_OnWeaponStateChange)(int, int) = nullptr;
+	bool (*FCNPC_OnStreamIn)(int, int) = nullptr;
+	bool (*FCNPC_OnStreamOut)(int, int) = nullptr;
+	bool (*FCNPC_OnVehicleEntryComplete)(int, int, int) = nullptr;
+	bool (*FCNPC_OnVehicleExitComplete)(int , int ) = nullptr;
+	bool (*FCNPC_OnVehicleTakeDamage)(int, int, int, float, int, float, float, float) = nullptr;
+	bool (*FCNPC_OnFinishPlayback)(int) = nullptr;
+	bool (*FCNPC_OnFinishNode)(int, int) = nullptr;
+	bool (*FCNPC_OnFinishNodePoint)(int, int, int) = nullptr;
+	bool (*FCNPC_OnChangeNode)(int, int, int) = nullptr;
+	bool (*FCNPC_OnFinishMovePath)(int, int) = nullptr;
+	bool (*FCNPC_OnFinishMovePathPoint)(int, int, int) = nullptr;
+	bool (*FCNPC_OnChangeHeightPos)(int, float, float) = nullptr; // disabled by default, see FCNPC_SetMinHeightPosCall
 }
 INormalGamemode;
