@@ -5,28 +5,60 @@ std::map<int, CNpc*> CNpc::g_NpcPool;
 
 CNpc::CNpc() : CBaseEntity(-1)
 {
-
+	m_LastUpdateTick = GetTickCount();
+	m_Logger.Init("CNpc", "","");
+	
 }
 CNpc::CNpc(int id) : CBaseEntity(id) {
 	CNpc::g_NpcPool.insert(std::pair<int, CNpc*>(this->m_ID, this));
+	m_LastUpdateTick = GetTickCount();
+	m_Logger.Init("CNpc", "", "");
 }
 CNpc::CNpc(const char* name)
 {
 	this->m_ID = FCNPC::FCNPC_Create(name);
 	CNpc::g_NpcPool.insert(std::pair<int, CNpc*>(this->m_ID, this));
+	m_LastUpdateTick = GetTickCount();
+	m_Logger.Init("CNpc", "", "");
 }
 CNpc::~CNpc()
 {
+	sampgdk::logprintf("%s Started", __FUNCTION__);
 	this->Destroy();
+	sampgdk::logprintf("%s Ended", __FUNCTION__);
 }
 int CNpc::Create(const char* name)
 {
 	this->m_ID = FCNPC::FCNPC_Create(name);
 	CNpc::g_NpcPool.insert(std::pair<int, CNpc*>(this->m_ID, this));
+	m_Logger.Info("NPC[" + std::to_string(this->m_ID) + "] has been created!");
 	return this->m_ID;
 }
 int CNpc::Destroy() {
-	return FCNPC::FCNPC_Destroy(this->m_ID);
+	try {
+		/// <summary>
+		/// You need not call m_Runtime->Dispose if you are using the delete operator on the runtime as it internally calls the same function, hence this be a
+		/// reason of server crashing while switching the gamemode.
+		/// Update:
+		/// There seems to be another issue even after calling 'delete m_Runtime' one possible reason could be: The runtime is still in use and requires all the
+		/// functions to have their execution completed after which we can destroy the context, this is a big challenge as we have to keep a track of all the callbacks 
+		/// </summary>
+		/// <returns></returns>
+		FCNPC::FCNPC_Destroy(this->m_ID);
+		m_HasScriptAttached = false;
+		sampgdk::logprintf("1");
+		JsSetCurrentContext(JS_INVALID_REFERENCE);
+		sampgdk::logprintf("2");
+		m_Runtime->CollectGarbage();
+		sampgdk::logprintf("3");
+		//m_Runtime->Dispose();
+		delete m_Runtime;
+		sampgdk::logprintf("4");
+	}
+	catch (std::exception& e) {
+		sampgdk::logprintf("%s", e.what());
+	}
+	return -1;
 }
 int CNpc::Spawn(int skinid, float x, float y, float z) {
 	return FCNPC::FCNPC_Spawn(this->m_ID, skinid, x, y, z);
@@ -462,87 +494,172 @@ int CNpc::HideInTabListForPlayer(int forplayerid) {
 }
 bool CNpc::OnCreate()
 {
+	//m_Context.SetCurrentContext();
 	return true;
 }
 bool CNpc::OnDestroy()
 {
+	//m_Context.SetCurrentContext();
 	return true;
 }
 bool CNpc::OnSpawn()
 {
+	//m_Context.SetCurrentContext();
 	return true;
 }
 bool CNpc::OnRespawn()
 {
+	//m_Context.SetCurrentContext();
 	return true;
 }
 bool CNpc::OnDeath(int killerid, int reason)
 {
+	if (m_HasScriptAttached) {
+		sampgdk::logprintf("calling CNpc::OnDeath(%d,%d)", killerid, reason);
+		m_Context.SetCurrentContext();
+		JavascriptParameterPack Pack;
+		JavascriptObject KillerID;
+		KillerID.CreateNumberFromInt(killerid);
+		Pack.AddObjectAsParam(&KillerID);
+		JavascriptObject Reason;
+		Reason.CreateNumberFromDouble(reason);
+		Pack.AddObjectAsParam(&Reason);
+		sampgdk::logprintf("Calling CNpc::OnDeath %d, %d", killerid, reason);
+		m_Code.CallFunction("OnDeath", Pack);
+	}
 	return true;
 }
 bool CNpc::OnUpdate()
 {
-	if (m_HasScriptAttached) {
-		m_Context.SetCurrentContext();
-		JavascriptParameterPack Pack;
-		m_Code.CallFunction("OnUpdate", Pack);
+	try {
+		if (m_HasScriptAttached) {
+			try {
+				m_Context.SetCurrentContext();
+				JavascriptParameterPack Pack;
+				m_Code.CallFunction("OnUpdate", Pack);
+				if ((GetTickCount() - m_LastUpdateTick) >= 1000) {
+					
+					JavascriptParameterPack Pack;
+					m_Code.CallFunction("OnOneSecondUpdate", Pack);
+					m_LastUpdateTick = GetTickCount();
+				}
+				/*NPCCallDefinition* call = new NPCCallDefinition;
+				call->Context = &m_Context;
+				call->Code = &m_Code;
+				call->CodeFunctionCall = "OnUpdate";
+				call->pack = Pack;
+				CNPCJsQueue::AddToQueue(call);*/
+			}
+			catch (JavascriptException& e) {
+				sampgdk::logprintf("%s", e.what());
+			}
+		}
+	}
+	catch (JavascriptException& e) {
+		sampgdk::logprintf(e.what());
 	}
 	return true;
 }
 bool CNpc::OnTakeDamage(int issuerid, float amount, int weaponid, int bodypart)
 {
-	m_Context.SetCurrentContext();
-	JavascriptParameterPack Pack;
-	JavascriptObject IssuerID;
-	IssuerID.CreateNumberFromInt(issuerid);
-	Pack.AddObjectAsParam(&IssuerID);
-	JavascriptObject Amount;
-	Amount.CreateNumberFromDouble(amount);
-	Pack.AddObjectAsParam(&Amount);
-	JavascriptObject WeaponID;
-	WeaponID.CreateNumberFromInt(weaponid);
-	Pack.AddObjectAsParam(&WeaponID);
-	JavascriptObject BodyPart;
-	BodyPart.CreateNumberFromInt(bodypart);
-	Pack.AddObjectAsParam(&BodyPart);
-	sampgdk::logprintf("Calling CNpc::Ontakedamage %d, %f, %d, %d", issuerid, amount, weaponid, bodypart);
-	m_Code.CallFunction("OnTakeDamage", Pack);
+	if (m_HasScriptAttached) {
+		m_Context.SetCurrentContext();
+		JavascriptParameterPack Pack;
+		JavascriptObject IssuerID;
+		IssuerID.CreateNumberFromInt(issuerid);
+		Pack.AddObjectAsParam(&IssuerID);
+		JavascriptObject Amount;
+		Amount.CreateNumberFromDouble(amount);
+		Pack.AddObjectAsParam(&Amount);
+		JavascriptObject WeaponID;
+		WeaponID.CreateNumberFromInt(weaponid);
+		Pack.AddObjectAsParam(&WeaponID);
+		JavascriptObject BodyPart;
+		BodyPart.CreateNumberFromInt(bodypart);
+		Pack.AddObjectAsParam(&BodyPart);
+		sampgdk::logprintf("Calling CNpc::Ontakedamage %d, %f, %d, %d", issuerid, amount, weaponid, bodypart);
+		m_Code.CallFunction("OnTakeDamage", Pack);
+	}
 	return true;
 }
+
 bool CNpc::OnGiveDamage(int damagedid, float amount, int weaponid, int bodypart)
 {
+	//m_Context.SetCurrentContext();
 	return true;
 }
 bool CNpc::OnReachDestination()
 {
+	if (m_HasScriptAttached) {
+		try {
+			m_Context.SetCurrentContext();
+			JavascriptParameterPack Pack;
+			m_Code.CallFunction("OnReachDestination", Pack);
+		}
+		catch (JavascriptException& e) {
+			sampgdk::logprintf(e.what());
+		}
+	}
 	return true;
 }
 bool CNpc::OnWeaponShot(int weaponid, int hittype, int hitid, float fX, float fY, float fZ)
 {
+	if (m_HasScriptAttached) {
+		m_Context.SetCurrentContext();
+	}
 	return true;
 }
 bool CNpc::OnWeaponStateChange(int weapon_state)
 {
+	if (m_HasScriptAttached) {
+		m_Context.SetCurrentContext();
+	}
 	return true;
 }
 bool CNpc::OnStreamIn(int forplayerid)
 {
+	//m_Context.SetCurrentContext();
 	return true;
 }
 bool CNpc::OnStreamOut(int forplayerid)
 {
+	//m_Context.SetCurrentContext();
 	return true;
 }
 bool CNpc::OnVehicleEntryComplete(int vehicleid, int seatid)
 {
+	if (m_HasScriptAttached) {
+		m_Context.SetCurrentContext();
+		sampgdk::logprintf("Calling OnVehicleEntryComplete(%d,%d)", vehicleid, seatid);
+		JavascriptParameterPack Pack;
+		JavascriptObject VehicleID, SeatID;
+		VehicleID.CreateNumberFromInt(vehicleid);
+		SeatID.CreateNumberFromInt(seatid);
+		Pack.AddObjectAsParam(&VehicleID);
+		Pack.AddObjectAsParam(&SeatID);
+
+		
+		m_Code.CallFunction("OnVehicleEntryComplete", Pack);
+	}
 	return true;
 }
 bool CNpc::OnVehicleExitComplete(int vehicleid)
 {
+	if (m_HasScriptAttached) {
+		m_Context.SetCurrentContext();
+		sampgdk::logprintf("Calling OnVehicleExitComplete(%d)", vehicleid);
+		JavascriptParameterPack Pack;
+		JavascriptObject VehicleID;
+		VehicleID.CreateNumberFromInt(vehicleid);
+		Pack.AddObjectAsParam(&VehicleID);
+		
+		m_Code.CallFunction("OnVehicleExitComplete", Pack);
+	}
 	return true;
 }
 bool CNpc::OnVehicleTakeDamage(int issuerid, int vehicleid, float amount, int weaponid, float fX, float fY, float fZ)
 {
+	//m_Context.SetCurrentContext();
 	return true;
 }
 bool CNpc::OnFinishPlayback()
@@ -576,32 +693,77 @@ bool CNpc::OnChangeHeightPos(float newz, float oldz)
 
 void CNpc::AttachScript(const std::string& script_path)
 {
-	if (CNpcConfig::GetNPCJSRuntime() != NULL) {
-		
-		m_Context.CreateContext(*CNpcConfig::GetNPCJSRuntime());
+	try {
+		sampgdk::logprintf("Attemping to attach script %s", script_path.c_str());
+		m_Runtime = new JavascriptRuntime();
+		m_Runtime->CreateRuntime();
+		m_ScriptPath = script_path;
+		m_Context.CreateContext(*m_Runtime);
 		m_Code.SetContext(m_Context);
 		m_Code.LoadJavascriptFile(script_path);
 		m_GlobalObject.SetAsGlobalObject();
 		m_Code.SetGlobalObject(m_GlobalObject);
 		m_SAMPJSObjects.Initialize();
 		m_FCNPCJSObjects.Initialize();
+		m_MATHJSObjects.Initialize();
 
+		JavascriptObject PropertyString;
+		JavascriptObject Writeable, Configurable, Value;
+		Writeable.CreateBooleanFromBool(false);
+		Configurable.CreateBooleanFromBool(false);
+		Value.CreateNumberFromInt(this->m_ID);
 		m_GlobalNPCID.CreateJSObject();
-		m_GlobalNPCID.CreateNumberFromInt(this->m_ID);
-		m_GlobalObject.SetObjectProperty("RefId", m_GlobalNPCID);
+		m_GlobalNPCID.SetObjectProperty("writeable", Writeable);
+		m_GlobalNPCID.SetObjectProperty("configuable", Writeable);
+		m_GlobalNPCID.SetObjectProperty("value", Value);
+		//m_GlobalNPCID.CreateNumberFromInt(this->m_ID);
+		//m_ContextAddress.CreateNumberFromInt((int)(JavascriptContext*)&this->m_Context);
+		Value.CreateNumberFromInt((int)(JavascriptContext*)&this->m_Context);
+		m_ContextAddress.CreateJSObject();
+		m_ContextAddress.SetObjectProperty("writeable", Writeable);
+		m_ContextAddress.SetObjectProperty("configuable", Writeable);
+		m_ContextAddress.SetObjectProperty("value", Value);
+
+		//m_GlobalObject.SetObjectProperty("RefId", m_GlobalNPCID);
+		//m_GlobalObject.SetObjectProperty("Context", m_ContextAddress);
+
+		bool result = m_GlobalObject.DefineProperty("RefId", m_GlobalNPCID);
+		result = m_GlobalObject.DefineProperty("Context", m_ContextAddress);
+
 		JavascriptObject m_SAMPObject = m_SAMPJSObjects.GetJSObject(),
-			m_NPCObject = m_FCNPCJSObjects.GetJSObject();
+			m_NPCObject = m_FCNPCJSObjects.GetJSObject(),
+			m_MathObject = m_MATHJSObjects.GetJSObject();
 
 
 		m_GlobalObject.SetObjectProperty("SAMP", m_SAMPObject);
 		m_GlobalObject.SetObjectProperty("NPC", m_NPCObject);
+		m_GlobalObject.SetObjectProperty("MATH", m_MathObject);
 		m_Code.RunCode();
 		sampgdk::logprintf("calling onscriptinit");
 		JavascriptParameterPack pack;
 		m_Code.CallFunction("OnScriptInit", pack);
-		
+
 		m_HasScriptAttached = true;
 	}
+	catch (JavascriptException& e) {
+		sampgdk::logprintf("%s", e.what());
+	}
+
+}
+void CNpc::ReloadScript() {
+	if (m_ScriptPath != "") {
+		//m_Code.SetContext(JS_INVALID_REFERENCE);
+		//m_Code.GetContext().GetAttachedRuntime()->CollectGarbage();
+		m_HasScriptAttached = false;
+		sampgdk::logprintf("Reloadscript called %x", this);
+		SetTimer(3500, false, CNpc::ScriptDetachTimer, (void*)this);
+		
+
+	}
+}
+void CNpc::InitializeJSCode()
+{
+
 }
 JsValueRef CALLBACK CNpc::NPCPrint(JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, void* callbackState)
 {
@@ -619,4 +781,25 @@ JsValueRef CALLBACK CNpc::NPCPrint(JsValueRef callee, bool isConstructCall, JsVa
 	}
 	sampgdk::logprintf("%s", ResultString.c_str());
 	return JS_INVALID_REFERENCE;
+}
+
+void CNpc::RecreateJSEnv() {
+	JsSetCurrentContext(JS_INVALID_REFERENCE);
+	m_LastUpdateTick = GetTickCount();
+	//m_Runtime->CollectGarbage();
+	m_Runtime->Dispose();
+	//delete m_Runtime;
+	//JsSetCurrentContext(JS_INVALID_REFERENCE);
+	//m_Code.GetContext().GetAttachedRuntime()->CollectGarbage();
+	//m_Code.SetContext();
+	//m_Runtime->CollectGarbage();
+	this->AttachScript(this->m_ScriptPath);
+}
+
+void CNpc::ScriptDetachTimer(int timerid, void* params)
+{
+	CNpc* npc = (CNpc*)params;
+	sampgdk::logprintf("NPC Address: %x", npc);
+
+	npc->RecreateJSEnv();
 }

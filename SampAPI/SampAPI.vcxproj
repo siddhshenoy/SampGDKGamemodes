@@ -143,8 +143,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Base\CLogger.h" />
+    <ClInclude Include="src\Base\CNPCJsQueue.h" />
+    <ClInclude Include="src\JavascriptFunctions\MATHJS.h" />
     <ClInclude Include="src\Base\CNpcConfig.h" />
     <ClInclude Include="src\JavascriptFunctions\FCNPCJS.h" />
+    <ClInclude Include="src\JavascriptFunctions\JSTimerParameterPack.h" />
     <ClInclude Include="src\JavascriptFunctions\SAMPJS.h" />
     <ClInclude Include="src\Base\CNpc.h" />
     <ClInclude Include="src\ThirdParty\FCNPC.h" />
@@ -166,6 +170,9 @@
     <ClInclude Include="src\Functions\VectorFunctions.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Base\CLogger.cpp" />
+    <ClCompile Include="src\Base\CNPCJsQueue.cpp" />
+    <ClCompile Include="src\JavascriptFunctions\MATHJS.cpp" />
     <ClCompile Include="src\Base\CNpcConfig.cpp" />
     <ClCompile Include="src\JavascriptFunctions\FCNPCJS.cpp" />
     <ClCompile Include="src\JavascriptFunctions\SAMPJS.cpp" />

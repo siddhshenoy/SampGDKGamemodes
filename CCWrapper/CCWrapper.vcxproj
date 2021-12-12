@@ -101,9 +101,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>JAVASCRIPT_LOGGING;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)External\Includes;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)External\Includes;$(SolutionDir)SampGDK\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,6 +150,7 @@
     <ClInclude Include="JavascriptObject.h" />
     <ClInclude Include="JavascriptParameterPack.h" />
     <ClInclude Include="JavascriptRuntime.h" />
+    <ClInclude Include="JavascriptSettings.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="JavascriptCode.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="JavascriptObject.cpp" />
     <ClCompile Include="JavascriptParameterPack.cpp" />
     <ClCompile Include="JavascriptRuntime.cpp" />
+    <ClCompile Include="JavascriptSettings.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

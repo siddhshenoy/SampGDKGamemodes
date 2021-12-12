@@ -1,6 +1,8 @@
 #pragma once
 
 #include "JavascriptRuntime.h"
+#include "JavascriptSettings.h"
+#include <sampgdk.h>
 namespace ChakraCore {
 	class JavascriptContext
 	{
@@ -16,6 +18,7 @@ namespace ChakraCore {
 		JsContextRef GetContext();
 		long GetContextNumber();
 		void SetCurrentContext();
+		JavascriptRuntime* GetAttachedRuntime();
 		~JavascriptContext();
 	};
 }

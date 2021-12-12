@@ -36,6 +36,9 @@
     <ClInclude Include="JavascriptObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JavascriptSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="JavascriptCode.cpp">
@@ -54,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JavascriptObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JavascriptSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

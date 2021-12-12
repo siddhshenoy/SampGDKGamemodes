@@ -121,7 +121,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SampGDK.lib;SampGDKGamemodes.lib;SampAPI.lib;CCWrapper.lib;ChakraCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SampGDK.lib;SampGDKGamemodes.lib;SampAPI.lib;CCWrapper.lib;ChakraCore.lib;spdlog.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)Binaries\$(Configuration);$(SolutionDir)External\Libraries;</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>$(ProjectDir)def\$(ProjectName).def</ModuleDefinitionFile>
     </Link>

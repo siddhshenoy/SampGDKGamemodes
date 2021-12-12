@@ -1374,7 +1374,7 @@ bool FCNPC::FCNPC_OnUpdate(int npcid)
 	if (FCNPC::p_FCNPC_OnUpdate != nullptr) {
 		defaultPointerResult = FCNPC::p_FCNPC_OnUpdate(npcid);
 	}
-	return defaultPointerResult;
+	return defaultPointerResult	;
 }
 bool FCNPC::FCNPC_OnTakeDamage(int npcid, int issuerid, float amount, int weaponid, int bodypart)
 {
@@ -1437,7 +1437,7 @@ bool FCNPC::FCNPC_OnVehicleEntryComplete(int npcid, int vehicleid, int seatid)
 {
 	bool defaultPointerResult = true;
 	if (FCNPC::p_FCNPC_OnVehicleEntryComplete != nullptr) {
-		defaultPointerResult = FCNPC::FCNPC_OnVehicleEntryComplete(npcid, vehicleid, seatid);
+		defaultPointerResult = FCNPC::p_FCNPC_OnVehicleEntryComplete(npcid, vehicleid, seatid);
 	}
 	return defaultPointerResult;
 }
@@ -1445,7 +1445,7 @@ bool FCNPC::FCNPC_OnVehicleExitComplete(int npcid, int vehicleid)
 {
 	bool defaultPointerResult = true;
 	if (FCNPC::p_FCNPC_OnVehicleExitComplete != nullptr) {
-		defaultPointerResult = FCNPC::FCNPC_OnVehicleExitComplete(npcid, vehicleid);
+		defaultPointerResult = FCNPC::p_FCNPC_OnVehicleExitComplete(npcid, vehicleid);
 	}
 	return defaultPointerResult;
 }

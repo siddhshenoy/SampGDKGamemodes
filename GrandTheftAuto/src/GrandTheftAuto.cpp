@@ -11,6 +11,8 @@
 #include <ThirdParty/FCNPC.h>
 #include <Base/CNpcConfig.h>
 #include <Base/CNpc.h>
+#include <Base/CNPCJsQueue.h>
+#include <JavascriptSettings.h>
 
 
 
@@ -23,16 +25,25 @@ namespace GrandTheftAuto
         int AdminLevel;
         int State;
     };
+    static const int total_connectable_npcs = 20;
     static std::map<int, PlayerData*> g_PlayerData;
+    
     //static int NPCID;
-    CNpc* CopNPC = nullptr;
-    CNpc* CopNPC2 = nullptr;
-    JavascriptRuntime g_Runtime;
+    /*CNpc* CopNPC = nullptr;
+    CNpc* CopNPC2 = nullptr;*/
+    CNpc* PedNPC[50];
+    //JavascriptRuntime g_Runtime;
     bool OnGameModeInit()
     {
-        
-        g_Runtime.CreateRuntime();
-        CNpcConfig::SetNPCJSRuntime(&g_Runtime);
+        //Creating the loggers (this uses spdlog)
+        CLogger::Setup();
+        CLogger::CreateLogger("CNpc", "./scriptfiles/logs/npclogs", "npclogs.log");
+        JavascriptSettings::InitiliazeJavascriptLogger("./scriptfiles/logs/", "ChakraCoreEngine.log");
+        //Finish creating the loggers (It is important to shutdown the logger which is done on 'OnGameModeExit')
+        //g_Runtime.CreateRuntime();
+        //CNPCJsQueue::StartTimer();
+        //sampgdk::logprintf("Created JS Runtime with memory limit: %d", g_Runtime.GetRuntimeMemoryLimit());
+        //CNpcConfig::SetNPCJSRuntime(&g_Runtime);
         /*SAMPJS::Initialize();
         FCNPCJS::Initialize();*/
         FCNPC::InitNatives();
@@ -40,18 +51,28 @@ namespace GrandTheftAuto
         FCNPC::Set_Callback_OnUpdate(&GrandTheftAuto::Callback_FCNPC_OnUpdate);
         FCNPC::Set_Callback_OnDestroy(&GrandTheftAuto::Callback_FCNPC_OnDestroy);
         FCNPC::Set_Callback_OnTakeDamage(&GrandTheftAuto::Callback_FCNPC_OnTakeDamage);
-
-        CopNPC = new CNpc();
+        FCNPC::Set_Callback_OnReachDestination(&GrandTheftAuto::Callback_FCNPC_OnReachDestination);
+        FCNPC::Set_Callback_OnDeath(&GrandTheftAuto::Callback_FCNPC_OnDeath);
+        FCNPC::Set_Callback_OnVehicleEntryComplete(&GrandTheftAuto::Callback_FCNPC_OnVehicleEntryComplete);
+        FCNPC::Set_Callback_OnVehicleExitComplete(&GrandTheftAuto::Callback_FCNPC_OnVehicleExitComplete);
+        for (int i = 0; i < total_connectable_npcs; i++) {
+            PedNPC[i] = new CNpc();
+            PedNPC[i]->Create(("Ped" + std::to_string(i)).c_str());
+            PedNPC[i]->AttachScript("./scriptfiles/jsscripts/npc/cop_npc_logic.js");
+            /*PedNPC[i]->Spawn((1 + (rand() % 300)), 0.0f, 0.0f, 0.0f);
+            PedNPC[i]->SetAngle(0.0f);*/
+        }
+       /* CopNPC = new CNpc();
         CopNPC->Create("CopNPC");
         CopNPC->AttachScript("./scriptfiles/jsscripts/npc/cop_npc_logic.js");
         CopNPC->Spawn(294, 0.0f, 0.0f, 3.0f);
         CopNPC->SetAngle(50.0f);
-        sampgdk::logprintf("Rotation: %f", CopNPC->GetAngle());
+        sampgdk::logprintf("Rotation: %f", CopNPC->GetAngle());*/
 
-        CopNPC2 = new CNpc();
+        /*CopNPC2 = new CNpc();
         CopNPC2->Create("CopNPC2");
         CopNPC2->Spawn(293, 0.0f, 0.0f, 3.0f);
-        CopNPC2->AttachScript("./scriptfiles/jsscripts/npc/cop_npc_logic.js");
+        CopNPC2->AttachScript("./scriptfiles/jsscripts/npc/cop_npc_logic.js");*/
 
         
         //sampgdk::logprintf("FCNPC: GetAngle(%f)", FCNPC::FCNPC_GetAngle(NPCID));
@@ -61,8 +82,20 @@ namespace GrandTheftAuto
     }
     bool OnGameModeExit()
     {
+        
         //FCNPC::FCNPC_Destroy(NPCID);
         sampgdk::logprintf("Loading OnGameModeExit using INormalGamemode");
+        
+        for (std::map<int, CNpc*>::iterator it = CNpc::g_NpcPool.begin(); it != CNpc::g_NpcPool.end(); it++) {
+            if (it->second != NULL) {
+                sampgdk::logprintf("Destroying CNPC");
+                delete it->second;
+                sampgdk::logprintf("Done..");
+            }
+        }
+        //g_Runtime.Dispose();
+        CLogger::Destroy();
+        JavascriptSettings::Cleanup();
         return true;
     }
     bool OnPlayerConnect(int playerid)
@@ -91,7 +124,20 @@ namespace GrandTheftAuto
     {
         return true;
     }
-
+    bool OnRconCommand(const std::string& command) {
+        sampgdk::logprintf("OnRconCommand");
+        if (command == "reloadnpcscripts") {
+            sampgdk::logprintf("Reloading NPC scripts..");
+            for (std::map<int, CNpc*>::iterator it = CNpc::g_NpcPool.begin(); it != CNpc::g_NpcPool.end(); it++) {
+                if (it->second != NULL) {
+                    sampgdk::logprintf("%d", it->first);
+                    /*sampgdk::logprintf("CNpc: %x", it->second);*/
+                    it->second->ReloadScript();
+                }
+            }
+        }
+        return true;
+    }
     bool OnPlayerCommandText(int playerid, const std::string& cmdtext)
     {
         std::vector<std::string> Splits = Utils::String::Split(cmdtext, ' ');
@@ -99,7 +145,18 @@ namespace GrandTheftAuto
         
         if (Splits.size() > 0)
         {
-            if (Splits[0] == "/weapon")
+            if (Splits[0] == "/reloadnpcscripts")
+            {
+                for (std::map<int, CNpc*>::iterator it = CNpc::g_NpcPool.begin(); it != CNpc::g_NpcPool.end(); it++) {
+                    if (it->second != NULL) {
+                        sampgdk::logprintf("%d", it->first);
+                        /*sampgdk::logprintf("CNpc: %x", it->second);*/
+                        it->second->ReloadScript();
+                    }
+                }
+                return true;
+            }
+            else if (Splits[0] == "/weapon")
             {
                 std::vector<std::string> Result;
                 if (!Utils::String::sscanf(Params, "ii", Result))
@@ -112,7 +169,26 @@ namespace GrandTheftAuto
                 {
                     SendClientMessage(playerid, 0xFF0000FF, "Usage: /weapon <weaponid> <ammo>");
                 }
+                return true;
                
+            }
+            else if (Splits[0] == "/setwanted") {
+                std::vector<std::string> Result;
+                if (!Utils::String::sscanf(Params, "ii", Result))
+                {
+                    int player1 = std::atoi(Result[0].c_str());
+                    int wantedlevel = std::atoi(Result[1].c_str());
+                    if (wantedlevel < 0) return SendClientMessage(playerid, 0xFF0000FF, "Error: Wanted level cannot be less than 0");
+                    if (IsPlayerConnected(player1)) {
+                        SetPlayerWantedLevel(player1, wantedlevel);
+                    }
+                    else SendClientMessage(playerid, 0xFF0000FF, "Error: Player is not connected!");
+                }
+                else
+                {
+                    SendClientMessage(playerid, 0xFF0000FF, "Usage: /setwanted <weaponid> <ammo>");
+                }
+                return true;
             }
             else if (Splits[0] == "/testcommand")
             {
@@ -197,6 +273,7 @@ namespace GrandTheftAuto
     }
     bool OnPlayerSpawn(int playerid)
     {
+        int x = 5;
         SetPlayerPos(playerid, -2680.4922f, -2224.0251f, 2.2676f);
         SetPlayerFacingAngle(playerid, 220.3892f);
         SendClientMessage(playerid, -1, "You have spawned at the default position.");
@@ -226,6 +303,40 @@ namespace GrandTheftAuto
         CNpc* npc = CNpc::g_NpcPool[npcid];
         if (npc != NULL) {
             npc->OnTakeDamage(issuerid, amount, weaponid, bodypart);
+        }
+        return true;
+    }
+    bool Callback_FCNPC_OnDeath(int npcid, int killerid, int reason)
+    {
+        CNpc* npc = CNpc::g_NpcPool[npcid];
+        if (npc != NULL) {
+            npc->OnDeath(killerid, reason);
+        }
+        return true;
+    }
+    bool Callback_FCNPC_OnReachDestination(int npcid)
+    {
+        CNpc* npc = CNpc::g_NpcPool[npcid];
+        if (npc != NULL) {
+            npc->OnReachDestination();
+        }
+
+        return true;
+    }
+    bool Callback_FCNPC_OnVehicleEntryComplete(int npcid, int vehicleid, int seatid)
+    {
+        sampgdk::logprintf("Callback_FCNPC_OnVehicleEntryComplete");
+        CNpc* npc = CNpc::g_NpcPool[npcid];
+        if (npc != NULL) {
+            npc->OnVehicleEntryComplete(vehicleid, seatid);
+        }
+        return true;
+    }
+    bool Callback_FCNPC_OnVehicleExitComplete(int npcid, int vehicleid)
+    {
+        CNpc* npc = CNpc::g_NpcPool[npcid];
+        if (npc != NULL) {
+            npc->OnVehicleExitComplete(vehicleid);
         }
         return true;
     }

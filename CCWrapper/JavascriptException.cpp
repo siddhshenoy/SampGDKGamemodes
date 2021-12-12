@@ -1,5 +1,6 @@
 #include "JavascriptException.h"
-
+#include <boost/stacktrace.hpp>
+#include <iostream>
 namespace ChakraCore
 {
 	JavascriptException::JavascriptException()
@@ -8,7 +9,8 @@ namespace ChakraCore
 	}
 	JavascriptException::JavascriptException(const std::string& ex)
 	{
-		m_ExceptionString = ex;
+		std::cout << boost::stacktrace::stacktrace() << std::endl;
+		m_ExceptionString = ex;		
 	}
 	JavascriptException::~JavascriptException()
 	{

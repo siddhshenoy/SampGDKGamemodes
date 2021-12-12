@@ -12,7 +12,7 @@ namespace Utils
 		struct SSCANF_PARAMETER
 		{
 			char specifier;
-			int length;
+			size_t length;
 		};
 
 		static std::vector<std::string> Split(const std::string& str, const char delimiter = ' ');
@@ -138,7 +138,7 @@ namespace Utils
 			//Format Specifier parsing start...
 			std::vector<SSCANF_PARAMETER> SpecifierList;
 			int ActualTotalParams = 0;
-			for (int i = 0; i < format.length(); i++)
+			for (size_t i = 0; i < format.length(); i++)
 			{
 				if (format[i] == 's' || (format[i] == 'i' || format[i] == 'd') || format[i] == 'f' || format[i] == 'u' || format[i] == 'c')
 				{
@@ -200,7 +200,7 @@ namespace Utils
 			//Format Specifier parsing end..
 
 			bool ExitParseFailure = false;
-			int iSplit = 0;
+			size_t iSplit = 0;
 			for (std::vector<SSCANF_PARAMETER>::const_iterator it = SpecifierList.begin(); it != SpecifierList.end(); it++)
 			{
 				SSCANF_PARAMETER Param = *it;

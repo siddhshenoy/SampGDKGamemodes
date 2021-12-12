@@ -12,17 +12,19 @@ namespace GrandTheftAuto
 	bool OnPlayerRequestClass(int, int);
 	bool OnPlayerStateChange(int, int, int);
 	bool OnPlayerCommandText(int, const std::string&);
-
+	bool OnRconCommand(const std::string&);
 //FCNPC
 	static bool Callback_FCNPC_OnCreate(int);
 	static bool Callback_FCNPC_OnUpdate(int);
 	static bool Callback_FCNPC_OnDestroy(int);
 	static bool Callback_FCNPC_OnTakeDamage(int, int, float, int, int);
-	//bool p_FCNPC_OnDestroy)(int) = nullptr;
+	static bool Callback_FCNPC_OnReachDestination(int);
+	static bool Callback_FCNPC_OnDeath(int, int, int);
+	static bool Callback_FCNPC_OnVehicleEntryComplete(int npcid, int vehicleid, int seatid);
+	static bool Callback_FCNPC_OnVehicleExitComplete(int npcid,int vehicleid);
 	//bool p_FCNPC_OnSpawn)(int) = nullptr;
 	//bool p_FCNPC_OnRespawn)(int) = nullptr;
 	//bool p_FCNPC_OnDeath)(int, int, int) = nullptr;
-	//bool p_FCNPC_OnUpdate)(int) = nullptr;
 	//bool p_FCNPC_OnTakeDamage)(int, int, float, int, int) = nullptr;
 	//bool p_FCNPC_OnGiveDamage)(int, int, float, int, int) = nullptr;
 	//bool p_FCNPC_OnReachDestination)(int) = nullptr;

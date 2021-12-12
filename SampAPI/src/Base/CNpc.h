@@ -7,25 +7,36 @@
 #include "CBaseEntity.h"
 #include "ThirdParty/FCNPC.h"
 #include "CNpcConfig.h"
-
+#include "CLogger.h"
 #include "JavascriptFunctions/SAMPJS.h"
 #include "JavascriptFunctions/FCNPCJS.h"
+#include "JavascriptFunctions/MATHJS.h"
+#include "CNPCJsQueue.h"
 #include <map>
 
 using namespace ChakraCore;
 
+
+
 class CNpc : public CBaseEntity
 {
 private:
+	JavascriptRuntime* m_Runtime;
 	JavascriptContext m_Context;
 	JavascriptCode m_Code;
 	JavascriptObject m_GlobalObject;
 	JavascriptObject m_GlobalNPCID;
+	JavascriptObject m_ContextAddress;
+
 	SAMPJS m_SAMPJSObjects;
 	FCNPCJS m_FCNPCJSObjects;
+	MATHJS m_MATHJSObjects;
+
+	CLogger m_Logger;
 private:
 	bool m_HasScriptAttached;
 	std::string m_ScriptPath;
+	int m_LastUpdateTick;
 public:
 	static std::map<int, CNpc*> g_NpcPool;
 public:
@@ -34,7 +45,10 @@ public:
 	CNpc(const char* name);
 	~CNpc();
 public:
+	void InitializeJSCode();
 	void AttachScript(const std::string& script_path);
+	void ReloadScript();
+	void RecreateJSEnv();
 public: //Functionality
 	int Create(const char* name);
 	int Destroy();
@@ -118,7 +132,7 @@ public: //Functionality
 	bool IsReloadingUsed();
 	int UseInfiniteAmmo(bool use);
 	bool IsInfiniteAmmoUsed();
-	int GoTo(float x, float y, float z, int type, float speed, int mode, int pathfinding, float radius, bool set_angle, float min_distance, int stop_delay);
+	int GoTo(float x, float y, float z, int type = FCNPC_MOVE_TYPE_AUTO, float speed = FCNPC_MOVE_SPEED_AUTO, int mode = FCNPC_MOVE_MODE_AUTO, int pathfinding = FCNPC_MOVE_PATHFINDING_AUTO, float radius = 0.0f, bool set_angle = true, float min_distance = 0.0f, int stop_delay = 250);
 	int GoToPlayer(int playerid, int type, float speed, int mode, int pathfinding, float radius, bool set_angle, float min_distance, float dist_check, int stop_delay);
 	int Stop();
 	bool IsMoving();
@@ -207,5 +221,15 @@ public:
 	bool OnFinishMovePathPoint(int pathid, int pointid);
 	bool OnChangeHeightPos(float newz, float oldz);
 public:
+	CLogger GetLogger() {
+		return m_Logger;
+	}
+public:
 	static JsValueRef CALLBACK NPCPrint(JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, void* callbackState);
+	static void SAMPGDK_CALL ScriptDetachTimer(int timerid, void* params);
+	//static void SAMPGDK_CALL DelayedScriptDetachTimer(int timerid, void* params);
+};
+
+struct NpcParameter {
+	CNpc* npc;
 };

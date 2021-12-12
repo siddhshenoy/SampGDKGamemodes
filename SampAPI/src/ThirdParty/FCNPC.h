@@ -350,7 +350,7 @@ public:
 	static bool FCNPC_IsReloadingUsed(int npcid);
 	static int FCNPC_UseInfiniteAmmo(int npcid, bool use);
 	static bool FCNPC_IsInfiniteAmmoUsed(int npcid);
-	static int FCNPC_GoTo(int npcid, float x, float y, float z, int type, float speed, int mode, int pathfinding, float radius, bool set_angle, float min_distance, int stop_delay);
+	static int FCNPC_GoTo(int npcid, float x, float y, float z, int type = FCNPC_MOVE_TYPE_AUTO, float speed= FCNPC_MOVE_SPEED_AUTO, int mode = FCNPC_MOVE_MODE_AUTO, int pathfinding = FCNPC_MOVE_PATHFINDING_AUTO, float radius = 0.0f, bool set_angle = true, float min_distance = 0.0f, int stop_delay = 250);
 	static int FCNPC_GoToPlayer(int npcid, int playerid, int type, float speed, int mode, int pathfinding, float radius, bool set_angle, float min_distance, float dist_check, int stop_delay);
 	static int FCNPC_Stop(int npcid);
 	static bool FCNPC_IsMoving(int npcid);

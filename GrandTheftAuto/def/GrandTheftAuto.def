@@ -12,3 +12,4 @@ EXPORTS
 	OnPlayerCommandText
 	OnPlayerSpawn
 	OnPlayerStateChange
+	OnRconCommand

@@ -6,6 +6,10 @@
 
 #include "JavascriptContext.h"
 #include "JavascriptParameterPack.h"
+#include "JavascriptSettings.h"
+#include <sampgdk.h>
+
+
 
 namespace ChakraCore
 {
@@ -22,6 +26,8 @@ namespace ChakraCore
 		JavascriptCode();
 
 		void SetContext(JavascriptContext& context);
+
+		JavascriptContext GetContext();
 		void SetGlobalObject(JavascriptObject& GlobalObject);
 		void LoadJavascriptFile(const std::string& filepath);
 		void RunCode();

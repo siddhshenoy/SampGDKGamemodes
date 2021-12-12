@@ -1,8 +1,12 @@
 #pragma once
 
+
 #include <ChakraCore/ChakraCore.h>
 #include <iostream>
 #include <string>
+#include <sampgdk.h>
+#include "JavascriptException.h"
+#include "JavascriptSettings.h"
 
 namespace ChakraCore {
 	class JavascriptObject
@@ -46,6 +50,8 @@ namespace ChakraCore {
 	public:
 		JsErrorCode CreateFunction(JsNativeFunction function, void* callbackState);
 		JsErrorCode AttachFunctionAsProperty(const std::string& functionname, JsNativeFunction function, void* callbackState);
+	public: // Properties
+		bool DefineProperty(const std::string& prop, JavascriptObject value);
 		//JsErrorCode CreateFunction();
 	};
 }
